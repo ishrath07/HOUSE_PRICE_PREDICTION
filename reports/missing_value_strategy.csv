@@ -1,0 +1,20 @@
+,missing,pct_missing,dtype,why_missing,fill_strategy
+PoolQC,1162,99.49,str,not applicable (feature absent),Fill with 'None' category
+MiscFeature,1122,96.06,str,not applicable (feature absent),Fill with 'None' category
+Alley,1094,93.66,str,not applicable (feature absent),Fill with 'None' category
+Fence,935,80.05,str,not applicable (feature absent),Fill with 'None' category
+MasVnrType,683,58.48,str,not applicable (no veneer),Fill with 'None' category
+FireplaceQu,547,46.83,str,not applicable (feature absent),Fill with 'None' category
+LotFrontage,217,18.58,float64,genuinely missing,Median imputation grouped by Neighborhood
+GarageType,64,5.48,str,not applicable (feature absent),Fill with 'None' category
+GarageYrBlt,64,5.48,float64,not applicable (no garage),Fill with YearBuilt; consider dropping since it tracks YearBuilt
+GarageFinish,64,5.48,str,not applicable (feature absent),Fill with 'None' category
+GarageQual,64,5.48,str,not applicable (feature absent),Fill with 'None' category
+GarageCond,64,5.48,str,not applicable (feature absent),Fill with 'None' category
+BsmtCond,28,2.4,str,not applicable (feature absent),Fill with 'None' category
+BsmtFinType1,28,2.4,str,not applicable (feature absent),Fill with 'None' category
+BsmtExposure,28,2.4,str,not applicable (feature absent),Fill with 'None' category
+BsmtQual,28,2.4,str,not applicable (feature absent),Fill with 'None' category
+BsmtFinType2,28,2.4,str,not applicable (feature absent),Fill with 'None' category
+MasVnrArea,6,0.51,float64,not applicable (no veneer),Fill with 0
+Electrical,1,0.09,str,genuinely missing,Mode imputation

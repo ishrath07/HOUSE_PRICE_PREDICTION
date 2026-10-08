@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+house_venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Data and artifacts (large / reproducible)
+data/raw/*
+data/processed/*
+models/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!models/.gitkeep
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

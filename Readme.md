@@ -3,7 +3,7 @@
 End-to-end regression project on the Ames Housing dataset, built in an industry-style structure
 (pipelines, tests, reproducible config).
 
-> **Status:** Phase 0 complete (scaffold and decisions). Next: Phase 1 (data and EDA).
+> **Status:** Phases 0-2 complete (scaffold, EDA, baseline). Next: Phase 3 (features and preprocessing).
 
 ## Quick start
 
@@ -29,8 +29,8 @@ docs/decisions.md          problem, metric, evaluation protocol
 ## Roadmap
 
 - [x] Phase 0: Setup and decisions
-- [ ] Phase 1: Data and EDA
-- [ ] Phase 2: Baseline
+- [x] Phase 1: Data and EDA
+- [x] Phase 2: Baseline
 - [ ] Phase 3: Features and preprocessing pipeline
 - [ ] Phase 4: Modelling and validation
 - [ ] Phase 5: Evaluation and diagnostics

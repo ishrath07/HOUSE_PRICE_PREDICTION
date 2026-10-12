@@ -47,6 +47,16 @@ def test_linear_baseline_uses_only_numeric_columns(toy):
     assert sorted(used) == ["Area", "Gappy", "Qual"]
 
 
+def test_build_linear_accepts_another_regressor_with_the_same_numeric_only_inputs(toy):
+    from sklearn.linear_model import Ridge
+
+    X, y = toy
+    model = baseline.build_linear(Ridge(alpha=1.0)).fit(X, y)
+    inner = model.regressor_
+    assert isinstance(inner.named_steps["model"], Ridge)
+    assert sorted(inner.named_steps["preprocess"].transformers_[0][2]) == ["Area", "Gappy", "Qual"]
+
+
 def test_run_baselines_returns_both_models_and_linear_wins(toy):
     X, y = toy
     results = baseline.run_baselines(X, y)

@@ -54,8 +54,11 @@ def build_dummy() -> TransformedTargetRegressor:
     return with_log_target(DummyRegressor(strategy="mean"))
 
 
-def build_linear() -> TransformedTargetRegressor:
+def build_linear(regressor=None) -> TransformedTargetRegressor:
     """Baseline 2: plain LinearRegression with minimal preprocessing.
+
+    `regressor` lets Phase 3 swap in another estimator (e.g. Ridge) behind the same
+    numeric-only preprocessing, to separate the effect of the model from the effect of features.
 
     Numeric columns only (chosen by dtype), missing values filled with the
     median, no scaling, no encoding, no feature engineering. Text columns are
@@ -72,7 +75,12 @@ def build_linear() -> TransformedTargetRegressor:
         remainder="drop",
     )
     return with_log_target(
-        Pipeline([("preprocess", numeric_only), ("model", LinearRegression())])
+        Pipeline(
+            [
+                ("preprocess", numeric_only),
+                ("model", LinearRegression() if regressor is None else regressor),
+            ]
+        )
     )
 
 

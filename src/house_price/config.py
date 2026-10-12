@@ -32,6 +32,13 @@ CV_FOLDS = 5
 OUTLIER_MIN_GRLIVAREA = 4000
 OUTLIER_MAX_SALEPRICE = 300_000
 
+# --- Preprocessing (Phase 3) -----------------------------------------------
+SKEW_THRESHOLD = 0.75  # EDA decision 7: log1p continuous columns with abs(skew) above this
+RARE_LEVEL_MIN_FREQUENCY = 0.01  # EDA decision 10: levels under 1% of rows become 'infrequent'
+SPARSE_STRATEGY = "flag"  # EDA decision 6: "flag" | "drop" | "keep" for PoolQC/MiscFeature/Alley
+
+RIDGE_ALPHA = 10.0  # placeholder regularization strength; Phase 4 tunes it with CV
+
 # --- Metrics ---------------------------------------------------------------
 # Primary: RMSE on log(SalePrice) (Kaggle's metric). Also report MAE and R^2.
 PRIMARY_METRIC = "rmse_log"

@@ -37,7 +37,11 @@ SKEW_THRESHOLD = 0.75  # EDA decision 7: log1p continuous columns with abs(skew)
 RARE_LEVEL_MIN_FREQUENCY = 0.01  # EDA decision 10: levels under 1% of rows become 'infrequent'
 SPARSE_STRATEGY = "flag"  # EDA decision 6: "flag" | "drop" | "keep" for PoolQC/MiscFeature/Alley
 
-RIDGE_ALPHA = 10.0  # placeholder regularization strength; Phase 4 tunes it with CV
+RIDGE_ALPHA = 10.0  # placeholder regularization strength used in Phase 3; Phase 4 tunes it
+
+# --- Modelling (Phase 4) ----------------------------------------------------
+INNER_CV_SEED = RANDOM_STATE + 1  # inner (tuning) folds differ from the outer (scoring) folds
+N_JOBS = 1  # parallel workers for searches; raise it with `--n-jobs` on the command line
 
 # --- Metrics ---------------------------------------------------------------
 # Primary: RMSE on log(SalePrice) (Kaggle's metric). Also report MAE and R^2.

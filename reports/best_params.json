@@ -1,0 +1,40 @@
+{
+  "selected": "Blend: Ridge + GradientBoosting",
+  "settings": {
+    "LinearRegression": {},
+    "Ridge": {
+      "alpha": 31.622776601683793
+    },
+    "Lasso": {
+      "alpha": 0.0006812920690579609
+    },
+    "ElasticNet": {
+      "alpha": 0.006812920690579608,
+      "l1_ratio": 0.05
+    },
+    "RandomForest": {
+      "min_samples_leaf": 1,
+      "max_features": 0.33,
+      "max_depth": null
+    },
+    "GradientBoosting": {
+      "subsample": 0.6,
+      "n_estimators": 800,
+      "min_samples_leaf": 1,
+      "max_depth": 4,
+      "learning_rate": 0.05
+    },
+    "Blend: Ridge + GradientBoosting": {
+      "Ridge": {
+        "alpha": 31.622776601683793
+      },
+      "GradientBoosting": {
+        "subsample": 0.6,
+        "n_estimators": 800,
+        "min_samples_leaf": 1,
+        "max_depth": 4,
+        "learning_rate": 0.05
+      }
+    }
+  }
+}

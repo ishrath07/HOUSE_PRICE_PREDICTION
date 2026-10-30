@@ -39,3 +39,10 @@ def test_load_train_can_keep_outliers(tmp_path):
 def test_load_train_missing_file_gives_helpful_error(tmp_path):
     with pytest.raises(FileNotFoundError, match="house_price.data"):
         data.load_train(tmp_path / "nope.csv")
+
+
+def test_load_test_does_not_drop_outliers(tmp_path):
+    path = tmp_path / "test.csv"
+    _frame().to_csv(path, index=False)
+    X, y = data.load_test(path)
+    assert len(X) == len(y) == 4

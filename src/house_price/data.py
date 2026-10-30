@@ -67,6 +67,23 @@ def load_train(path=None, remove_outliers: bool = True):
     return df.drop(columns=[config.TARGET]), df[config.TARGET]
 
 
+def load_test(path=None):
+    """Load the held-out TEST split and return (X, y).
+
+    Outliers are never dropped here (EDA decision 12). Call this only from Phase 5:
+    the test split is scored once, after model selection is finished.
+    """
+    path = path or config.PROCESSED_DIR / "test.csv"
+    if not path.exists():
+        raise FileNotFoundError(
+            f"{path} not found. Put Kaggle's train.csv in data/raw/ and run "
+            "`python -m house_price.data` to create the train/test split."
+        )
+    df = pd.read_csv(path).drop(columns=[config.ID_COLUMN], errors="ignore")
+    logger.info("Loaded test split: %d rows (outliers kept)", len(df))
+    return df.drop(columns=[config.TARGET]), df[config.TARGET]
+
+
 def make_split_files() -> None:
     """Write the split to data/processed/ so every script uses the same rows."""
     config.ensure_dirs()

@@ -1,4 +1,4 @@
-.PHONY: setup data lint test clean
+.PHONY: setup data lint test evaluate clean
 
 setup:
 	python -m venv house_venv
@@ -12,6 +12,9 @@ lint:
 
 test:
 	pytest
+
+evaluate:
+	python -m house_price.evaluate
 
 clean:
 	rm -rf .pytest_cache .ruff_cache **/__pycache__

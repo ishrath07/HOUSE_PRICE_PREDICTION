@@ -43,6 +43,9 @@ RIDGE_ALPHA = 10.0  # placeholder regularization strength used in Phase 3; Phase
 INNER_CV_SEED = RANDOM_STATE + 1  # inner (tuning) folds differ from the outer (scoring) folds
 N_JOBS = 1  # parallel workers for searches; raise it with `--n-jobs` on the command line
 
+# --- Evaluation (Phase 5) ---------------------------------------------------
+PERMUTATION_REPEATS = 8  # repeats for permutation importance on the frozen model
+
 # --- Metrics ---------------------------------------------------------------
 # Primary: RMSE on log(SalePrice) (Kaggle's metric). Also report MAE and R^2.
 PRIMARY_METRIC = "rmse_log"

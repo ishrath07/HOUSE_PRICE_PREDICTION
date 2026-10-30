@@ -3,7 +3,7 @@
 End-to-end regression project on the Ames Housing dataset, built in an industry-style structure
 (pipelines, tests, reproducible config).
 
-> **Status:** Phases 0-4 complete (scaffold, EDA, baseline, features, modelling and validation). Next: Phase 5 (evaluation and diagnostics).
+> **Status:** Phases 0-5 complete (scaffold, EDA, baseline, features, modelling, validation, evaluation). Next: Phase 6 (packaging).
 
 ## Quick start
 
@@ -12,7 +12,8 @@ make setup                 # create venv, install deps, install package
 # put train.csv in data/raw/  (see data/README.md)
 make data                  # create the fixed train/test split
 make test                  # run tests
-python -m house_price.train   # Phase 4: tune and compare models (about 10 min, see --help)
+python -m house_price.train      # Phase 4: tune and compare models (about 10 min, see --help)
+python -m house_price.evaluate   # Phase 5: score the held-out test split once
 ```
 
 ## Project layout
@@ -20,7 +21,7 @@ python -m house_price.train   # Phase 4: tune and compare models (about 10 min, 
 ```
 data/raw, data/processed   input data (git-ignored)
 notebooks/                 exploration only
-src/house_price/           reusable code (config, data, baseline, features, pipeline, models, train; later: evaluate, predict)
+src/house_price/           reusable code (config, data, baseline, features, pipeline, models, train, evaluate; later: predict)
 models/                    saved model artifacts
 reports/figures/           plots for the README
 tests/                     pytest
@@ -34,14 +35,14 @@ docs/decisions.md          problem, metric, evaluation protocol
 - [x] Phase 2: Baseline
 - [x] Phase 3: Features and preprocessing pipeline
 - [x] Phase 4: Modelling and validation
-- [ ] Phase 5: Evaluation and diagnostics
+- [x] Phase 5: Evaluation and diagnostics
 - [ ] Phase 6: Packaging (CLI, tests, docs)
 
 ## Results
 
 Nested 5-fold cross-validation on the training split (RMSE on log price, lower is better).
 Settings are tuned inside each training fold, so these scores are not flattered by the tuning.
-The test split stays untouched until Phase 5.
+The test split was left untouched until Phase 5.
 
 <!-- RESULTS:START -->
 | Model | Tuned settings | CV RMSE (log) | Std | CV MAE ($) | CV R2 |
@@ -59,3 +60,13 @@ The test split stays untouched until Phase 5.
 Earlier phases for reference: dummy 0.3906, numeric-only linear baseline 0.1258
 (`docs/baseline_results.md`), Phase 3 pipeline with Ridge 0.1100 (`docs/preprocessing_results.md`).
 Full tables, per-fold scores and tuning curves: `docs/model_results.md`, `reports/`.
+
+## Held-out test (Phase 5)
+
+Scored **once** on the 20% test split after model selection was finished. Outliers were
+not dropped from the test rows (EDA decision 12). Diagnostics, coefficients and the
+houses the model gets most wrong: `docs/evaluation_results.md`, `reports/figures/13_*.png`–`17_*.png`.
+
+<!-- TEST_RESULTS:START -->
+Run `python -m house_price.evaluate` (or `python notebooks/05_evaluation_diagnostics.py`) to fill this block.
+<!-- TEST_RESULTS:END -->

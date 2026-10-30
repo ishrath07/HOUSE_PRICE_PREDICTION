@@ -442,3 +442,4 @@ print("\nPhase 4 complete." if all(checks.values()) else "\nSomething is off - r
 # ## Next: Phase 5 (evaluation and diagnostics)
 # Score the saved model on the held-out test split **once**, then study residuals, the biggest misses
 # (many are abnormal sales), and which features drive the predictions.
+# Run `python notebooks/05_evaluation_diagnostics.py` or `python -m house_price.evaluate`.

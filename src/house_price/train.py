@@ -16,10 +16,12 @@ Run:  python -m house_price.train            (about 10 minutes; use --n-jobs 2 o
 """
 
 import argparse
+import csv
 import json
 import logging
 import time
 from dataclasses import dataclass
+from datetime import UTC, datetime
 
 import joblib
 import numpy as np
@@ -332,6 +334,7 @@ def save_results(out: dict) -> None:
         encoding="utf-8",
     )
     joblib.dump(out["finals"][out["winner"]], config.MODELS_DIR / "best_model.joblib")
+    log_experiment_run(out)
 
     table = results_markdown(out)
     paired = out["paired"].round(4).to_string(index=False)
@@ -349,6 +352,47 @@ def save_results(out: dict) -> None:
     )
     update_readme(table)
     logger.info("Saved model, tables and README results (selected: %s)", out["winner"])
+
+
+def log_experiment_run(out: dict) -> None:
+    """Append one compact row per candidate to reports/experiment_runs.csv."""
+    path = config.REPORTS_DIR / "experiment_runs.csv"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fields = [
+        "run_id",
+        "recorded_at_utc",
+        "model",
+        "selected",
+        "settings_json",
+        "cv_rmse_log",
+        "cv_rmse_log_std",
+        "cv_mae",
+        "cv_r2",
+    ]
+    run_id = datetime.now(UTC).isoformat()
+    rows = []
+    for result in out["summary"].to_dict(orient="records"):
+        model_name = str(result["model"])
+        settings = out["settings"].get(model_name, {})
+        rows.append(
+            {
+                "run_id": run_id,
+                "recorded_at_utc": run_id,
+                "model": model_name,
+                "selected": model_name == out["winner"],
+                "settings_json": json.dumps(settings, sort_keys=True, default=str),
+                "cv_rmse_log": result["cv_rmse_log"],
+                "cv_rmse_log_std": result["cv_rmse_log_std"],
+                "cv_mae": result["cv_mae"],
+                "cv_r2": result["cv_r2"],
+            }
+        )
+    with path.open("a", encoding="utf-8", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=fields)
+        if file.tell() == 0:
+            writer.writeheader()
+        writer.writerows(rows)
+    logger.info("Appended %d candidate results to %s", len(rows), path)
 
 
 def load_saved() -> dict | None:

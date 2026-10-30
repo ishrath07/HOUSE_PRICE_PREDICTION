@@ -245,10 +245,21 @@ def test_run_all_saves_the_model_tables_and_readme_and_everything_reloads(sandbo
         models.BLEND_NAME,
     ]
     assert set(out["settings"][models.BLEND_NAME]) == set(models.BLEND_MEMBERS)  # members' settings
-    for f in ["model_results.csv", "model_cv_folds.csv", "tuning_results.csv", "best_params.json",
-              "model_paired_comparison.csv", "model_oof_predictions.csv"]:  # fmt: skip
+    for f in [
+        "model_results.csv",
+        "model_cv_folds.csv",
+        "tuning_results.csv",
+        "best_params.json",
+        "model_paired_comparison.csv",
+        "model_oof_predictions.csv",
+        "experiment_runs.csv",
+    ]:
         assert (sandbox / "reports_dir" / f).exists(), f
     assert (sandbox / "docs_dir" / "model_results.md").exists()
+
+    experiment_log = pd.read_csv(sandbox / "reports_dir" / "experiment_runs.csv")
+    assert set(experiment_log["model"]) == set(out["summary"]["model"])
+    assert experiment_log["selected"].sum() == 1
 
     saved = joblib.load(sandbox / "models_dir" / "best_model.joblib")
     X, _ = ames

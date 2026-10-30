@@ -1,4 +1,4 @@
-.PHONY: setup data train evaluate predict lint format test clean
+.PHONY: setup data train evaluate predict api docker-build lint format test clean
 
 ifeq ($(OS),Windows_NT)
 VENV_PYTHON = .venv/Scripts/python.exe
@@ -23,6 +23,12 @@ evaluate:
 
 predict:
 	$(VENV_PYTHON) -m house_price.predict $(ARGS)
+
+api:
+	$(VENV_PYTHON) -m uvicorn house_price.api:app --host 0.0.0.0 --port 8000
+
+docker-build:
+	docker build -t house-price-api .
 
 lint:
 	$(VENV_PYTHON) -m ruff check src tests

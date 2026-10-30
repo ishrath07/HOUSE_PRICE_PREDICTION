@@ -4,7 +4,7 @@ End-to-end regression project on the Ames Housing dataset. It estimates a house'
 from its recorded characteristics using a leakage-safe scikit-learn pipeline, nested
 cross-validation, a single held-out evaluation, and a reusable prediction CLI.
 
-> **Status:** Phases 0-6 complete, including model packaging and CSV / single-record prediction.
+> **Status:** Phases 0-7 complete, including model packaging, prediction API, CI, and Docker.
 > Requires Python 3.12 or newer; exact dependency versions are pinned in `requirements.txt`.
 
 ## Quick start
@@ -17,6 +17,7 @@ make test                        # run tests
 make train                       # tune, compare, fit, and save models/best_model.joblib
 make evaluate                    # score the held-out test split; run this only once
 make predict ARGS="--input-csv houses.csv --output predictions.csv"
+make api                         # start the FastAPI service on http://localhost:8000
 ```
 
 For a single complete Ames feature record, save one JSON object to a file and run:
@@ -38,16 +39,47 @@ python -m house_price.evaluate
 python -m house_price.predict --input-csv houses.csv --output predictions.csv
 ```
 
+## Live prediction API
+
+The optional FastAPI service loads the saved model once at startup and exposes:
+
+- `GET /health` — readiness check.
+- `POST /predict` — one JSON record containing every raw feature used by the trained pipeline.
+  Returns `{"predicted_sale_price": ...}`. Missing required features or an included
+  `SalePrice` target return HTTP 422.
+
+Start locally with `make api` (or
+`python -m uvicorn house_price.api:app --host 0.0.0.0 --port 8000`). Interactive API docs
+are available at `http://localhost:8000/docs`.
+
+## Experiment tracking
+
+Each full saved training run appends one row per candidate model to
+`reports/experiment_runs.csv`. Rows include the UTC run ID, candidate settings, CV metrics,
+and which model was selected. This lightweight CSV tracker requires no tracking server.
+Quick or partial training runs do not append tracking results.
+
+## CI and Docker
+
+GitHub Actions runs Ruff, Black's formatting check, and pytest on every push and pull request
+using Python 3.12. To build the optional API container, first run `make train` to create the
+local `models/best_model.joblib` artifact, then run `make docker-build` and
+`docker run --rm -p 8000:8000 house-price-api`. The model artifact is excluded from Git, so
+each deployment environment must provide its own trained artifact when building the image.
+
 ## Project layout
 
 ```
 data/raw, data/processed   input data (git-ignored)
 notebooks/                 exploration only
-src/house_price/           reusable code and train/evaluate/predict CLIs
+src/house_price/           reusable code, train/evaluate/predict CLIs, FastAPI app
 models/                    saved model artifacts
 reports/figures/           evaluation and diagnostic plots
+reports/experiment_runs.csv appended candidate metrics from full training runs
 tests/                     pytest
 docs/decisions.md          problem, metric, evaluation protocol
+.github/workflows/         push / pull-request CI
+Dockerfile                 non-root FastAPI container; requires trained model artifact
 ```
 
 ## Approach
@@ -71,6 +103,7 @@ development only and does not save a final artifact.
 - [x] Phase 4: Modelling and validation
 - [x] Phase 5: Evaluation and diagnostics
 - [x] Phase 6: Packaging (CLI, tests, docs)
+- [x] Phase 7: Optional extras (API, experiment CSV, CI, Docker)
 
 ## Results
 

@@ -1,0 +1,16 @@
+{
+  "winner": "Blend: Ridge + GradientBoosting",
+  "n_test": 292,
+  "rmse_log": 0.12362320994049784,
+  "mae": 13798.106075452379,
+  "r2": 0.9296034834093057,
+  "cv_rmse_log": 0.1066956426691682,
+  "checks": {
+    "shapiro_stat": 0.850246530600764,
+    "shapiro_p": 3.766567554604469e-16,
+    "hetero_spearman": -0.029060124844980054,
+    "hetero_p": 0.6209148888915417,
+    "residual_mean": -0.0009960171703724905,
+    "residual_std": 0.12383141943524727
+  }
+}

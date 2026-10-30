@@ -68,5 +68,15 @@ not dropped from the test rows (EDA decision 12). Diagnostics, coefficients and 
 houses the model gets most wrong: `docs/evaluation_results.md`, `reports/figures/13_*.png`–`17_*.png`.
 
 <!-- TEST_RESULTS:START -->
-Run `python -m house_price.evaluate` (or `python notebooks/05_evaluation_diagnostics.py`) to fill this block.
+Held-out test scored **once** with the Phase 4 winner (**Blend: Ridge + GradientBoosting**).
+
+| Split | n | RMSE (log) | MAE ($) | R2 |
+|---|---|---|---|---|
+| cv_train_5fold | 1166 | 0.1067 | 13,067 | 0.929 |
+| test | 292 | 0.1236 | 13,798 | 0.930 |
+| train_resubstitution | 1166 | 0.0547 | 7,077 | 0.981 |
+
+Test RMSE(log) = **0.1236** (+15.9% vs CV). `train_resubstitution` refits nothing: it is the same frozen model scored on the rows it was trained on, so it is optimistic (especially for the tree member).
+
+Top raw features by permutation importance (test): OverallQual (0.0502), TotalBsmtSF (0.0349), GrLivArea (0.0314), 2ndFlrSF (0.0268), 1stFlrSF (0.0221), YearBuilt (0.0142), OverallCond (0.0133), LotArea (0.0114).
 <!-- TEST_RESULTS:END -->

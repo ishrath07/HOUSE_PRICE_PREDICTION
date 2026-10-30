@@ -275,10 +275,11 @@ def test_run_all_without_save_writes_nothing(sandbox):
     assert not (sandbox / "reports_dir").exists() and not (sandbox / "models_dir").exists()
 
 
-def test_command_line_quick_run_prints_the_selection(sandbox, capsys):
+def test_command_line_quick_run_logs_the_selection(sandbox, caplog):
+    caplog.set_level("INFO", logger="house_price.train")
     train.main(["--quick", "--models", "Ridge"])
-    printed = capsys.readouterr().out
-    assert "Selected (one-standard-error rule): Ridge" in printed and "nothing was saved" in printed
+    assert "Selected (one-standard-error rule): Ridge" in caplog.text
+    assert "no final model artifact was saved" in caplog.text
 
 
 def test_the_blend_can_be_selected_and_the_saved_model_is_the_selected_one(sandbox, ames):

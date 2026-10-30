@@ -62,9 +62,7 @@ def fold_metrics(y_true, y_pred) -> dict:
     }
 
 
-def evaluate_nested(
-    spec: models.ModelSpec, X, y, outer=None, n_jobs=config.N_JOBS
-) -> NestedResult:
+def evaluate_nested(spec: models.ModelSpec, X, y, outer=None, n_jobs=config.N_JOBS) -> NestedResult:
     """Nested cross-validation for one candidate (see the module docstring)."""
     outer = outer or baseline.get_cv()
     start = time.time()
@@ -372,8 +370,12 @@ def load_saved() -> dict | None:
 
 
 def main(argv=None) -> None:
-    parser = argparse.ArgumentParser(description="Phase 4: nested-CV model comparison")
-    parser.add_argument("--quick", action="store_true", help="tiny searches, nothing is saved")
+    parser = argparse.ArgumentParser(
+        description="Tune, compare, and train the final house-price model"
+    )
+    parser.add_argument(
+        "--quick", action="store_true", help="run tiny searches for development; do not save"
+    )
     parser.add_argument("--n-jobs", type=int, default=config.N_JOBS, help="parallel workers")
     parser.add_argument("--models", default="", help="comma-separated subset, e.g. Ridge,Lasso")
     args = parser.parse_args(argv)
@@ -382,14 +384,13 @@ def main(argv=None) -> None:
     only = [m.strip() for m in args.models.split(",") if m.strip()] or None
     out = run_all(quick=args.quick, n_jobs=args.n_jobs, only=only, save=not args.quick and not only)
 
-    print()
-    print(out["summary"].round(4).to_string(index=False))
-    print(f"\nSelected (one-standard-error rule): {out['winner']}")
-    print(out["paired"].round(4).to_string(index=False))
+    logger.info("\n%s", out["summary"].round(4).to_string(index=False))
+    logger.info("Selected (one-standard-error rule): %s", out["winner"])
+    logger.info("\n%s", out["paired"].round(4).to_string(index=False))
     for warning in out["grid_warnings"]:
-        print("WARNING:", warning)
+        logger.warning("%s", warning)
     if args.quick or only:
-        print("\n(quick or partial run: nothing was saved)")
+        logger.info("Quick or partial run: no final model artifact was saved.")
 
 
 if __name__ == "__main__":

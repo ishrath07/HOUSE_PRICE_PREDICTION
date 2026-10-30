@@ -1,19 +1,41 @@
 # House Price Prediction
 
-End-to-end regression project on the Ames Housing dataset, built in an industry-style structure
-(pipelines, tests, reproducible config).
+End-to-end regression project on the Ames Housing dataset. It estimates a house's sale price
+from its recorded characteristics using a leakage-safe scikit-learn pipeline, nested
+cross-validation, a single held-out evaluation, and a reusable prediction CLI.
 
-> **Status:** Phases 0-5 complete (scaffold, EDA, baseline, features, modelling, validation, evaluation). Next: Phase 6 (packaging).
+> **Status:** Phases 0-6 complete, including model packaging and CSV / single-record prediction.
+> Requires Python 3.12 or newer; exact dependency versions are pinned in `requirements.txt`.
 
 ## Quick start
 
 ```bash
-make setup                 # create venv, install deps, install package
-# put train.csv in data/raw/  (see data/README.md)
-make data                  # create the fixed train/test split
-make test                  # run tests
-python -m house_price.train      # Phase 4: tune and compare models (about 10 min, see --help)
-python -m house_price.evaluate   # Phase 5: score the held-out test split once
+make setup                       # create .venv and install pinned dependencies/package
+# put Kaggle's train.csv in data/raw/ (see data/README.md)
+make data                        # create the fixed train/test split
+make test                        # run tests
+make train                       # tune, compare, fit, and save models/best_model.joblib
+make evaluate                    # score the held-out test split; run this only once
+make predict ARGS="--input-csv houses.csv --output predictions.csv"
+```
+
+For a single complete Ames feature record, save one JSON object to a file and run:
+
+```bash
+.venv/Scripts/python -m house_price.predict --record-file house.json  # Windows
+# .venv/bin/python -m house_price.predict --record-file house.json    # macOS/Linux
+```
+
+The JSON object must include the same raw feature columns used for training. A CSV can
+contain an optional `Id` column; the output is a Kaggle-style `Id,SalePrice` file. Input
+must not include `SalePrice`. To score one inline JSON object instead, use `--record-json`.
+
+The command-line equivalents work from an activated environment as well:
+
+```bash
+python -m house_price.train
+python -m house_price.evaluate
+python -m house_price.predict --input-csv houses.csv --output predictions.csv
 ```
 
 ## Project layout
@@ -21,12 +43,24 @@ python -m house_price.evaluate   # Phase 5: score the held-out test split once
 ```
 data/raw, data/processed   input data (git-ignored)
 notebooks/                 exploration only
-src/house_price/           reusable code (config, data, baseline, features, pipeline, models, train, evaluate; later: predict)
+src/house_price/           reusable code and train/evaluate/predict CLIs
 models/                    saved model artifacts
-reports/figures/           plots for the README
+reports/figures/           evaluation and diagnostic plots
 tests/                     pytest
 docs/decisions.md          problem, metric, evaluation protocol
 ```
+
+## Approach
+
+The target is modelled as `log1p(SalePrice)` and predictions are returned in dollars. Feature
+engineering, imputation, encoding, and scaling are fitted inside scikit-learn pipelines.
+Nested cross-validation on training rows selects the final model; the held-out 20% test split
+is used only once, at the end. The saved artifact contains the complete fitted preprocessing
+and model pipeline, so prediction applies the exact same transformations as training.
+
+Run `make lint` for Ruff checks, `make format` to format Python code with Black, and
+`make test` for pytest. `make train` performs the full nested-CV workflow; `--quick` is for
+development only and does not save a final artifact.
 
 ## Roadmap
 
@@ -36,7 +70,7 @@ docs/decisions.md          problem, metric, evaluation protocol
 - [x] Phase 3: Features and preprocessing pipeline
 - [x] Phase 4: Modelling and validation
 - [x] Phase 5: Evaluation and diagnostics
-- [ ] Phase 6: Packaging (CLI, tests, docs)
+- [x] Phase 6: Packaging (CLI, tests, docs)
 
 ## Results
 
@@ -80,3 +114,19 @@ Test RMSE(log) = **0.1236** (+15.9% vs CV). `train_resubstitution` refits nothin
 
 Top raw features by permutation importance (test): OverallQual (0.0502), TotalBsmtSF (0.0349), GrLivArea (0.0314), 2ndFlrSF (0.0268), 1stFlrSF (0.0221), YearBuilt (0.0142), OverallCond (0.0133), LotArea (0.0114).
 <!-- TEST_RESULTS:END -->
+
+## Evaluation figures
+
+The held-out diagnostics and top test-set feature drivers are shown below. Full explanations,
+assumption checks, coefficients, and worst-case errors are in
+[`docs/evaluation_results.md`](docs/evaluation_results.md).
+
+![Predicted prices versus actual prices](reports/figures/13_predicted_vs_actual.png)
+
+![Residuals and error distribution](reports/figures/14_residuals.png)
+
+![Linear-member assumption diagnostics](reports/figures/15_assumptions.png)
+
+![Feature drivers and Ridge coefficients](reports/figures/16_feature_drivers.png)
+
+![Error analysis](reports/figures/17_error_analysis.png)
